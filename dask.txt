@@ -1,0 +1,95 @@
+Dask 是一个并行计算库，它可以在多核处理器或分布式集群上执行大规模数据处理。它与 pandas 和 NumPy 无缝集成，专为处理大规模数据集设计，超越了单台机器内存的限制。Dask 通过分布式计算的方式，允许用户高效加载和处理海量数据。
+
+Dask 如何支持分布式计算
+任务图（Task Graph）调度： Dask 通过构建任务图来管理并行和分布式计算任务。任务图定义了计算任务之间的依赖关系，Dask 使用这个图来调度任务，并在集群或本地多个 CPU 核心上并行执行这些任务。
+
+每个计算操作（如过滤、聚合等）都是任务图中的一个节点。
+Dask 会根据依赖关系来决定任务的执行顺序，确保任务并行运行，同时解决任务之间的依赖问题。
+延迟计算（Lazy Evaluation）： Dask 与 pandas 和 NumPy 类似，但它不会立即执行操作，而是通过延迟计算的方式将所有操作添加到任务图中。只有在用户调用 compute() 时，Dask 才真正执行这些操作。这种方式允许优化任务的调度和执行，减少不必要的中间步骤。
+
+分块数据（Chunking Data）： Dask 将大数据集分为多个小块（chunk），每个块可以独立地进行计算。每个数据块都在任务图中对应一个节点，通过并行处理这些数据块，Dask 能够大幅度提高效率。
+
+数据可以被分成多个分区，每个分区可以分布在不同的机器上或本地多个 CPU 核心上。
+例如，Dask 的 DataFrame 相当于多个 pandas DataFrame 的集合，它们分布在不同的块中，每个块可以独立操作。
+分布式计算： Dask 支持分布式集群计算，可以跨多个机器执行任务。在这种情况下，每个节点（worker）会接收一个子任务并处理相应的数据块，然后 Dask 会将结果汇总在一起。这种方式能够大幅扩展数据处理能力。
+
+使用 Dask 的 distributed 模块，用户可以轻松管理集群中的多个 worker，自动调度任务，并处理节点间的通信。
+Dask 的调度器会在分布式环境中负责监控任务进度、协调任务失败后的重试、以及将任务分发到合适的 worker 上。
+如何加载海量数据
+Dask 可以处理大到无法完全加载到内存的数据集。它通过分块加载数据，从而只需要占用内存的部分空间，同时还能在分布式环境下处理。
+
+1. 使用 Dask DataFrame
+Dask 的 DataFrame 是 pandas 的并行版本，能够分块处理大规模数据。
+
+python
+Copy
+Edit
+import dask.dataframe as dd
+
+# 使用 Dask 加载海量 CSV 文件
+df = dd.read_csv('large_dataset.csv')
+
+# 查看数据
+print(df.head())
+
+# 计算数据结果
+result = df.groupby('column').sum().compute()
+print(result)
+read_csv() 使用延迟计算，实际上并不会立即将整个文件加载到内存中，而是分块读取并处理数据。
+调用 compute() 时，Dask 会并行处理每个数据块，然后汇总结果。
+2. 使用 Dask Bag 处理非结构化数据
+Dask Bag 适合处理非结构化或半结构化数据，比如 JSON 文件、文本文件等。
+
+python
+Copy
+Edit
+import dask.bag as db
+
+# 读取一个巨大的 JSON 文件
+data = db.read_text('large_json_file.json')
+
+# 处理数据，比如计算某个字段的出现次数
+result = data.map(json.loads).pluck('field').frequencies().compute()
+print(result)
+3. 使用 Dask Array 处理大规模的数值数据
+Dask Array 是 NumPy 的并行版本，适合处理大型数值数组。
+
+python
+Copy
+Edit
+import dask.array as da
+
+# 创建一个大规模的随机数数组（延迟计算）
+array = da.random.random((100000, 100000), chunks=(1000, 1000))
+
+# 计算数组的和
+result = array.sum().compute()
+print(result)
+4. 分布式集群上的数据处理
+可以使用 Dask 的分布式集群模式，在多台机器上处理数据。
+
+python
+Copy
+Edit
+from dask.distributed import Client
+
+# 连接到分布式集群
+client = Client('localhost:8786')
+
+# 创建一个 Dask DataFrame 或 Array
+df = dd.read_csv('large_dataset.csv')
+
+# 执行分布式计算
+result = df.groupby('column').sum().compute()
+
+# 关闭客户端
+client.close()
+Dask 的优势
+处理大数据： Dask 能够处理超出单台机器内存的数据集，特别适合大规模数据分析任务。
+扩展性强： Dask 支持单机多核以及分布式集群计算，能够轻松扩展计算规模。
+与流行库集成： Dask 无缝兼容 pandas、NumPy、scikit-learn 等常见 Python 库，降低了学习和使用成本。
+灵活的任务调度： Dask 的任务图调度能够优化计算流程，减少不必要的重复计算。
+Dask 的局限性
+不适合所有类型的计算： 尽管 Dask 能处理许多类型的数据和任务，但某些高性能计算任务（如深度学习）可能需要使用更专业的工具，如 TensorFlow、PyTorch。
+需要合理的任务设计： 用户需要合理设计任务以避免过多的小任务，避免不必要的调度开销。
+通过 Dask，用户可以轻松扩展计算资源，处理海量数据集，同时保持与常见数据处理库的兼容性，特别适合大规模数据分析任务。
