@@ -54,14 +54,14 @@ def init_opensearch(host, port, index_name):
 # 插入文档到 OpenSearch 向量索引
 def index_documents(client, index_name, docs, embedder):
     actions = []
-    for i, doc in enumerate(docs):
-        embedding = embedder.embed([doc])[0]
+    embeddings = embedder.embed(docs)
+    for i, embedding in enumerate(embeddings):
         action = {
             "_index": index_name,
             "_id": i,
             "_source": {
                 "embedding": embedding.tolist(),
-                "text": doc
+                "text": docs[i]
             }
         }
         actions.append(action)
