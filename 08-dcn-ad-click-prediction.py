@@ -115,4 +115,5 @@ if __name__ == "__main__":
         logits = model(x)
         # Sigmoid 激活得到概率
         probs = torch.sigmoid(logits)
+        print(probs.shape)
         print("预测点击概率：", probs.squeeze().cpu().numpy())

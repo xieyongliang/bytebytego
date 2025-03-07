@@ -21,6 +21,9 @@ class FocalLoss(nn.Module):
         """
         # 使用交叉熵损失
         BCE_loss = F.cross_entropy(inputs, targets, reduction='none')
+        log_probs = torch.log_softmax(inputs, dim=1)
+        loss = -log_probs.gather(dim=1, index=targets.unsqueeze(1)).squeeze(1)
+        print(BCE_loss, log_probs, loss)
         
         # 获取预测的概率值
         pt = torch.exp(-BCE_loss)

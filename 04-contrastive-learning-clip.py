@@ -4,21 +4,13 @@ from datasets import load_dataset
 from torch.utils.data import DataLoader
 from torch import nn, optim
 import torchvision.transforms as T
-from PIL import Image
 
 # 加载预训练的CLIP模型和处理器
 model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
 # 使用自定义数据集（这里以COCO数据集为例，其他数据集类似）
-dataset = load_dataset("coco", split="train[:10%]")  # 加载部分数据
-
-# 定义数据预处理：包括对图像的缩放和标准化
-transform = T.Compose([
-    T.Resize((224, 224)),
-    T.ToTensor(),
-    T.Normalize(mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711]),
-])
+dataset = load_dataset("jxie/coco_captions", split="train[:1%]")  # 加载部分数据
 
 # 定义对比损失函数
 class CLIPLoss(nn.Module):
@@ -44,10 +36,10 @@ optimizer = optim.Adam(model.parameters(), lr=5e-6)
 
 # 数据加载器
 def collate_fn(batch):
-    images = [transform(Image.open(item['image']['coco_url']).convert("RGB")) for item in batch]
+    images = [item['image'].convert("RGB") for item in batch]
     texts = [item['caption'] for item in batch]
     return {
-        'images': torch.stack(images),
+        'images': images,
         'texts': texts
     }
 
@@ -58,15 +50,18 @@ model.train()
 for epoch in range(3):  # 训练3个epoch
     total_loss = 0
     for batch in dataloader:
-        images = batch['images'].to(device)
+        images = batch['images']
         texts = batch['texts']
 
         # 处理文本和图像输入
-        inputs = processor(text=texts, images=images, return_tensors="pt", padding=True).to(device)
+        images = processor(images=images, return_tensors="pt")
+        texts = processor(text=texts, return_tensors="pt", padding=True)
         
         # 获取模型的输出
-        image_features = model.get_image_features(**inputs)
-        text_features = model.get_text_features(**inputs)
+        image_features = model.get_image_features(**images)
+        image_features = image_features / image_features.norm(p=2, dim=-1, keepdim=True)
+        text_features = model.get_text_features(**texts)
+        text_features = text_features / text_features.norm(p=2, dim=-1, keepdim=True)
 
         # 计算损失
         loss = CLIPLoss()(text_features, image_features)
@@ -82,4 +77,3 @@ for epoch in range(3):  # 训练3个epoch
 
 # 保存微调后的模型
 model.save_pretrained("./finetuned_clip")
-processor.save_pretrained("./finetuned_clip")
