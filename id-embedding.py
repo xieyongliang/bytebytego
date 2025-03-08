@@ -54,3 +54,5 @@ for epoch in range(num_epochs):
 
 with torch.no_grad():
     print(model(user_ids, item_ids))
+    print(model.user_embedding(user_ids))
+    print(model.item_embedding(item_ids))

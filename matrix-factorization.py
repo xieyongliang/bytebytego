@@ -74,6 +74,10 @@ if __name__ == "__main__":
     mf.train()
     predicted_R = mf.predict()
     
+    print("P 矩阵:")
+    print(mf.P)
+    print("Q 矩阵:")
+    print(mf.Q)
     print("原始评分矩阵 R:")
     print(R)
     print("\n预测评分矩阵:")

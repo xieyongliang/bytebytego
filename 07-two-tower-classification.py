@@ -108,14 +108,10 @@ for epoch in range(num_epochs):
 def recommend_events(user_idx, top_k=5):
     # 对于新用户或已有用户，根据用户的内容特征生成嵌入
     user_feat = torch.tensor(user_features[user_idx]).unsqueeze(0).to(device)
-    with torch.no_grad():
-        user_embedding = model.user_encoder(user_feat)  # shape: (1, embedding_dim)
-    # 对于所有事件，根据其内容特征生成嵌入
     all_event_feats = torch.tensor(event_features).to(device)
-    with torch.no_grad():
-        event_embeddings = model.event_encoder(all_event_feats)  # shape: (num_events, embedding_dim)
-    # 计算点积作为兴趣得分
-    scores = (user_embedding * event_embeddings).sum(dim=1)
+
+    scores, _, _ = model(user_feat, all_event_feats)
+
     top_scores, top_indices = torch.topk(scores, top_k)
     return top_indices.cpu().numpy(), top_scores.cpu().numpy()
 

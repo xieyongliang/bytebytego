@@ -34,7 +34,6 @@ def get_image_embeddings(frames):
         with torch.no_grad():
             image_features = model.encode_image(image)
             embeddings.append(image_features)
-            print(image_features.shape)
     return torch.cat(embeddings).mean(dim=0)
 
 class ContrastiveLearningDataset(Dataset):
@@ -72,17 +71,8 @@ if __name__ == '__main__':
     '''
     image_or_video_path = '/Users/yonglxie/Downloads/image-1.jpg'
     image = Image.open(image_or_video_path)
-    print(image)
     image = preprocess(image).unsqueeze(0).to(device)
-    print(image.shape)
     with torch.no_grad():
         image_emb = model.encode_image(image).squeeze(dim=0)
         print(image_emb.shape)
-    image = np.zeros([1024, 1024])  # 图像的形状与视频的单帧相同
-    image = Image.fromarray(image)
-    image = preprocess(image).unsqueeze(0).to(device)
-    print(image.shape)
-    with torch.no_grad():
-        image_features = model.encode_image(image).squeeze(dim=0)
-        print(image_features.shape)
-        print(image_features)
+  

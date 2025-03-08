@@ -1,0 +1,7 @@
+order_id,customer_id,name,age,phone,region,amount,department
+1001,123,"John Doe",35,555-123-4567,"North",899.50,"IT"
+1002,456,"Jane Smith",28,, "South",2450.00,"HR"
+1003,789,"Bob Johnson",42,555-987-6543,"East",320.25,"IT"
+1004,101,"Alice Brown",23,555-555-5555,"West",null,"Finance"
+1005,202,"Charlie Lee",50,, "North",1750.99,"HR"
+1006,303,"Diana King",31,555-111-2222,"South",null,"IT"

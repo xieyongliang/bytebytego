@@ -11,11 +11,9 @@ class FactorizationMachine(torch.nn.Module):
         
         # First-order weights (linear term)
         self.w = torch.nn.Parameter(torch.randn(n_features))
-        print('0', self.w.shape)
         
         # Second-order embeddings for each feature
         self.V = torch.nn.Parameter(torch.randn(n_features, k))  # Feature embedding matrix
-        print('1', self.V.shape)
         
         # Global bias term (optional)
         self.bias = torch.nn.Parameter(torch.tensor(0.0))

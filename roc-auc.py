@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import roc_curve, auc, precision_recall_curve, average_precision_score
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import make_classification
 from sklearn.linear_model import LogisticRegression
@@ -21,6 +21,10 @@ y_probs = model.predict_proba(X_test)[:, 1]
 # 计算 ROC 曲线
 fpr, tpr, thresholds = roc_curve(y_test, y_probs)
 
+youden_idx = np.argmax(tpr - fpr)
+best_threshold = thresholds[youden_idx]
+print(f"Best Threshold:{best_threshold:.2f}")
+
 # 计算 AUC 值
 roc_auc = auc(fpr, tpr)
 
@@ -35,3 +39,25 @@ plt.ylabel('True Positive Rate')
 plt.title('Receiver Operating Characteristic')
 plt.legend(loc="lower right")
 plt.show()
+
+# 计算PR值
+precision, recall, thresholds = precision_recall_curve(y_test, y_probs)
+
+# 找到精确率和召回率均较高的阈值
+f1_scores = (2 * precision * recall) / (precision + recall + 1e-8) 
+best_idx = np.argmax(f1_scores) 
+best_threshold = thresholds[best_idx] 
+print(f"Best Threshold: {best_threshold:.2f}")
+
+# 计算平均精确率 (Average Precision, AP)
+ap_score = average_precision_score(y_test, y_probs)
+
+# 绘制PR曲线
+plt.figure(figsize=(8, 6))
+plt.plot(recall, precision, color='darkorange', lw=2, label=f'PR Curve (AP={ap_score:.2f})')
+plt.xlabel('Recall', fontsize=12)
+plt.ylabel('Precision', fontsize=12)
+plt.title('Precision-Recall Curve', fontsize=14)
+plt.legend(loc='lower left')
+plt.grid(True)
+plt.show( )
