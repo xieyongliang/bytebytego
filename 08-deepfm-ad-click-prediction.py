@@ -72,7 +72,7 @@ class DeepFM(nn.Module):
         # 此处通常的组合方式有很多种，可采用直接相加或者再经过一个全连接层融合
         total_sum = linear_part + fm_part + deep_out
         # 预测概率
-        y_pred = torch.sigmoid(total_sum)
+        y_pred = torch.sigmoid(total_sum) #(batch_size, 1)
         return y_pred
 
 # ---------------------------
@@ -93,11 +93,7 @@ if __name__ == "__main__":
     
     # 模拟标签：点击为1，未点击为0
     y = torch.randint(0, 2, (batch_size, 1)).float()
-    
-    # 前向传播
-    y_pred = model(x)
-    print("预测点击概率：", y_pred.squeeze())
-    
+
     # 定义损失函数和优化器
     criterion = nn.BCELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)

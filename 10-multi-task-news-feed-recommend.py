@@ -59,7 +59,7 @@ if __name__ == "__main__":
     # 模拟分类任务标签：0/1（例如点击与否）
     cls_labels = torch.randint(0, 2, (batch_size, 1)).float()
     # 模拟回归任务标签：例如用户停留时间（单位：秒）
-    reg_labels = torch.randn(batch_size, 1) * 10 + 30  # 均值30秒，方差10
+    reg_labels = torch.randn(batch_size, 1) * 10 + 30  # 均值30，方差10
     
     # 定义两个任务的损失函数
     cls_loss_fn = nn.BCEWithLogitsLoss()   # 分类任务使用二分类交叉熵（含sigmoid）

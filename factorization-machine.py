@@ -64,5 +64,6 @@ fm_model = FactorizationMachine(n_features, k)
 X = torch.randn(2, n_features)  # Shape: (batch_size=2, n_features=10)
 
 # Forward pass
-output = fm_model(X)
+with torch.no_grad():
+    output = fm_model(X)
 print("FM Prediction:", output)

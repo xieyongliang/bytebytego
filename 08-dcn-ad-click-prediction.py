@@ -117,3 +117,4 @@ if __name__ == "__main__":
         probs = torch.sigmoid(logits)
         print(probs.shape)
         print("预测点击概率：", probs.squeeze().cpu().numpy())
+        print("推荐的广告ID：", probs.squeeze().cpu().sort(descending=True).indices[:10])

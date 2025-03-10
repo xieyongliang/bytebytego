@@ -3,7 +3,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch_geometric.nn import GCNConv
-from torch_geometric.data import Data
 
 # ------------------------------
 # 1. 定义GCN模型，用于学习节点嵌入
@@ -64,6 +63,7 @@ x = torch.randn((num_nodes, num_features))
 # edge_index 的形状为 (2, num_edges)
 num_edges = 500
 edge_index = torch.randint(0, num_nodes, (2, num_edges))
+print(edge_index)
 
 # 构造训练样本：这些是时刻 t+1 的候选边及标签（1表示边存在，0表示不存在）
 # 例如，随机选取200个边候选，并随机生成标签（在实际中应该来自真实数据）
