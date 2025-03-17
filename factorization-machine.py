@@ -43,10 +43,6 @@ class FactorizationMachine(torch.nn.Module):
         
         # Second-order interaction term
         second_order = 0.5 * (sum_squared - squared_sum)  # Shape: (batch_size,)
-
-        interaction_term = 0.5 * torch.sum(torch.matmul(X, self.V) ** 2 - torch.matmul(X ** 2, self.V ** 2), dim=1, keepdim=True)
-        
-        print(second_order, interaction_term)
         
         # Total prediction: sum of first-order, second-order, and bias
         y_hat = first_order + second_order + self.bias

@@ -90,11 +90,11 @@ if __name__ == '__main__':
 
         for data, label1, label2 in train_loader:
             data, label1, label2 = data.to(device), label1.to(device), label2.to(device)
-            task1_output, task2_output = model(input_data)
+            task1_output, task2_output = model(data)
 
             # 计算任务1和任务2的损失
-            task1_loss = criterion(task1_output, task1_labels)
-            task2_loss = criterion(task2_output, task2_labels)
+            task1_loss = criterion(task1_output.squeeze(), label1)
+            task2_loss = criterion(task2_output.squeeze(), label2)
 
             # 计算总损失（可以给不同任务的损失赋予不同权重）
             loss = task1_loss + task2_loss

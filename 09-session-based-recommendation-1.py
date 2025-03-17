@@ -85,10 +85,9 @@ model.train()
 for epoch in range(num_epochs):
     epoch_loss = 0.0
     for feat1, feat2, label in dataloader:
-        label = label.unsqueeze(1)  # shape (batch, 1)
         optimizer.zero_grad()
         output = model(feat1, feat2)
-        loss = criterion(output, label)
+        loss = criterion(output.squeeze(dim=1), label)
         loss.backward()
         optimizer.step()
         epoch_loss += loss.item() * feat1.size(0)
